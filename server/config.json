@@ -1,0 +1,7 @@
+{
+  "PORT": 3000,
+  "SITE_URL": "http://localhost:3000",
+  "ADMIN_USER": "halil",
+  "ADMIN_PASS_HASH": "$2b$12$vEN3GbwdJkOAaDm2Ezn4wO2YO76NKbETtmllSmQWXzQBWWUp2vsVO",
+  "SESSION_SECRET": "uzun_bir_rastgele_metni_buraya_yazin_32_karakter_ve_uzun"
+}

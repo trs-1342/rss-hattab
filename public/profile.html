@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Profil</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <strong>Blog</strong> — <a href="/index.html">Anasayfa</a> ·
+      <a href="/new.html">Yeni Gönderi</a>
+    </header>
+    <main>
+      <div class="card" id="box">Yükleniyor…</div>
+    </main>
+    <footer>© <span id="y"></span></footer>
+    <script src="/js/main.js"></script>
+    <script>
+      (async function () {
+        document.getElementById("y").textContent = new Date().getFullYear();
+        const box = document.getElementById("box");
+        const me = await currentUser();
+        if (!me) {
+          location.href = "/login.html";
+          return;
+        }
+        box.innerHTML = `
+    <h2>Merhaba, ${me.username}</h2>
+    <p>Yalnızca admin içerik ekleyebilir.</p>
+    <button id="logout">Çıkış yap</button>
+  `;
+        document
+          .getElementById("logout")
+          .addEventListener("click", async () => {
+            await api("/api/logout", { method: "POST" });
+            location.href = "/index.html";
+          });
+      })();
+    </script>
+  </body>
+</html>

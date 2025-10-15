@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Giriş</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header><strong>Blog</strong> — <a href="/index.html">Anasayfa</a></header>
+    <main>
+      <div class="card">
+        <h2>Yönetici Girişi</h2>
+        <label>Kullanıcı adı</label>
+        <input id="u" placeholder="kullanıcı adı" />
+        <label>Parola</label>
+        <input id="p" type="password" placeholder="parola" />
+        <button id="b">Giriş yap</button>
+        <div id="m" class="meta"></div>
+      </div>
+    </main>
+    <footer>© <span id="y"></span></footer>
+    <script src="/js/main.js"></script>
+    <script>
+      (async function () {
+        document.getElementById("y").textContent = new Date().getFullYear();
+        document.getElementById("b").addEventListener("click", async () => {
+          const username = document.getElementById("u").value.trim();
+          const password = document.getElementById("p").value.trim();
+          try {
+            await api("/api/login", {
+              method: "POST",
+              body: JSON.stringify({ username, password }),
+            });
+            location.href = "/profile.html";
+          } catch (e) {
+            document.getElementById("m").textContent = e.message;
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anasayfa</title>
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="RSS"
+      href="/rss.xml"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <strong>Blog</strong> — <a href="/index.html">Anasayfa</a> ·
+      <a href="/login.html" id="loginLink">Giriş</a> ·
+      <a href="/profile.html" id="profileLink" style="display: none">Profil</a>
+    </header>
+    <main>
+      <div class="card">
+        <h2>Ara / Filtrele</h2>
+        <div class="grid grid-2">
+          <div>
+            <label>Arama</label>
+            <input id="q" placeholder="başlık, açıklama, metin" />
+          </div>
+          <div>
+            <label>Tarih aralığı</label>
+            <div class="grid grid-2">
+              <input type="date" id="from" />
+              <input type="date" id="to" />
+            </div>
+          </div>
+        </div>
+        <button id="btnSearch">Listele</button>
+      </div>
+
+      <div class="card">
+        <h2>Gönderiler</h2>
+        <div id="list"></div>
+      </div>
+    </main>
+    <footer>© <span id="y"></span> - JSON tabanlı mini blog</footer>
+    <script src="/js/main.js"></script>
+    <script>
+      (async function () {
+        document.getElementById("y").textContent = new Date().getFullYear();
+        const user = await currentUser();
+        document.getElementById("loginLink").style.display = user ? "none" : "";
+        document.getElementById("profileLink").style.display = user
+          ? ""
+          : "none";
+
+        async function load() {
+          const q = document.getElementById("q").value.trim();
+          const from = document.getElementById("from").value;
+          const to = document.getElementById("to").value;
+          const { items } = await api(
+            `/api/posts?q=${encodeURIComponent(q)}&from=${encodeURIComponent(
+              from
+            )}&to=${encodeURIComponent(to)}`
+          );
+          const list = document.getElementById("list");
+          list.innerHTML = "";
+          if (!items.length) {
+            list.innerHTML = '<div class="meta">Kayıt yok</div>';
+            return;
+          }
+          for (const p of items) {
+            const el = document.createElement("div");
+            el.className = "list-item";
+            el.innerHTML = `
+        <a href="/post.html?id=${encodeURIComponent(p.slug)}"><strong>${
+              p.title
+            }</strong></a>
+        <div class="meta">${fmtDate(p.publishedAt)} · ${p.author} · okunma: ${
+              p.readCount || 0
+            }</div>
+        <div>${p.description}</div>
+      `;
+            list.appendChild(el);
+          }
+        }
+
+        document.getElementById("btnSearch").addEventListener("click", load);
+        load();
+      })();
+    </script>
+  </body>
+</html>

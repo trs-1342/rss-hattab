@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gönderi</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header><strong>Blog</strong> — <a href="/index.html">Anasayfa</a></header>
+    <main>
+      <article class="card" id="post">Yükleniyor…</article>
+    </main>
+    <footer>© <span id="y"></span></footer>
+    <script src="/js/main.js"></script>
+    <script>
+      (async function () {
+        document.getElementById("y").textContent = new Date().getFullYear();
+        const slug = qs("id");
+        try {
+          const { post } = await api(`/api/posts/${encodeURIComponent(slug)}`);
+          document.title = post.title + " — Gönderi";
+          document.getElementById("post").innerHTML = `
+      <h1>${post.title}</h1>
+      <div class="meta">${fmtDate(post.publishedAt)} · ${
+            post.author
+          } · okunma: ${post.readCount || 0}</div>
+      <p><em>${post.description}</em></p>
+      <hr/>
+      <div>${post.body.replace(/\n/g, "<br>")}</div>
+    `;
+          // okunma sayacı
+          api(`/api/posts/${encodeURIComponent(slug)}/read`, {
+            method: "POST",
+          }).catch(() => {});
+        } catch (e) {
+          document.getElementById(
+            "post"
+          ).innerHTML = `<div class="meta">Bulunamadı</div>`;
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Yeni Gönderi</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header><strong>Blog</strong> — <a href="/index.html">Anasayfa</a></header>
+    <main>
+      <div class="card">
+        <h2>Yeni Gönderi</h2>
+        <label>Başlık</label>
+        <input id="title" />
+        <label>Açıklama</label>
+        <input id="description" />
+        <label>Metin</label>
+        <textarea
+          id="body"
+          rows="10"
+          placeholder="HTML değil, düz metin (\n satır geçişi)"
+        ></textarea>
+        <label>Yayın Tarihi (opsiyonel)</label>
+        <input id="publishedAt" type="datetime-local" />
+        <button id="save">Kaydet</button>
+        <div id="msg" class="meta"></div>
+      </div>
+    </main>
+    <footer>© <span id="y"></span></footer>
+    <script src="/js/main.js"></script>
+    <script>
+      (async function () {
+        document.getElementById("y").textContent = new Date().getFullYear();
+        const me = await currentUser();
+        if (!me) {
+          location.href = "/login.html";
+          return;
+        }
+
+        document.getElementById("save").addEventListener("click", async () => {
+          const title = document.getElementById("title").value.trim();
+          const description = document
+            .getElementById("description")
+            .value.trim();
+          const body = document.getElementById("body").value.trim();
+          const publishedAt = document.getElementById("publishedAt").value
+            ? new Date(
+                document.getElementById("publishedAt").value
+              ).toISOString()
+            : undefined;
+          try {
+            const { post } = await api("/api/posts", {
+              method: "POST",
+              body: JSON.stringify({ title, description, body, publishedAt }),
+            });
+            location.href = `/post.html?id=${encodeURIComponent(post.slug)}`;
+          } catch (e) {
+            document.getElementById("msg").textContent = e.message;
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
